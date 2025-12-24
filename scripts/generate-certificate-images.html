@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>证书图片生成工具</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1976d2;
+            text-align: center;
+        }
+        .certificate {
+            width: 1200px;
+            height: 800px;
+            border: 8px solid #1976d2;
+            padding: 60px;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            position: relative;
+            margin: 20px auto;
+        }
+        .cert-title {
+            font-size: 48px;
+            color: #1976d2;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .cert-number {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        .cert-text {
+            font-size: 24px;
+            color: #333;
+            margin: 25px 0;
+            line-height: 2;
+        }
+        .cert-name {
+            font-size: 64px;
+            font-weight: bold;
+            color: #1976d2;
+            margin: 40px 0;
+            text-decoration: underline;
+            text-decoration-color: #1976d2;
+            text-underline-offset: 15px;
+        }
+        .cert-description {
+            font-size: 28px;
+            color: #555;
+            margin: 50px 0;
+            line-height: 2.5;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .cert-org {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1976d2;
+            margin-top: 80px;
+        }
+        .cert-date {
+            margin-top: 60px;
+            font-size: 20px;
+            color: #666;
+        }
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 120px;
+            color: rgba(25, 118, 210, 0.05);
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .cert-content {
+            position: relative;
+            z-index: 1;
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        button {
+            padding: 12px 30px;
+            background: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        button:hover {
+            background: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>证书图片生成工具</h1>
+        <div class="controls">
+            <button onclick="generateImage()">生成并下载图片</button>
+            <button onclick="generateAll()">生成所有示例证书</button>
+        </div>
+        <div id="certificate" class="certificate">
+            <div class="watermark" id="watermark">社团证书管理系统</div>
+            <div class="cert-content">
+                <div class="cert-title" id="certTitle">社团证书</div>
+                <div class="cert-number" id="certNumber">证书编号：CERT-2024-001</div>
+                <div class="cert-text">兹证明</div>
+                <div class="cert-name" id="certName">张三</div>
+                <div class="cert-text">（学号：2021001）</div>
+                <div class="cert-description" id="certDesc">在社团活动中表现优异，特发此证，以资鼓励。</div>
+                <div class="cert-org" id="certOrg">社团证书管理系统</div>
+                <div class="cert-date" id="certDate">2024年1月15日</div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        const certificates = [
+            {
+                title: '优秀社员证书',
+                number: 'CERT-2024-001',
+                name: '张三',
+                studentId: '2021001',
+                description: '在2023-2024学年中，积极参与社团活动，表现优异，特发此证，以资鼓励。',
+                org: '计算机社团',
+                date: '2024年1月15日'
+            },
+            {
+                title: '活动参与证书',
+                number: 'CERT-2024-002',
+                name: '李四',
+                studentId: '2021002',
+                description: '在"校园文化节"活动中表现突出，积极参与组织工作，特发此证。',
+                org: '文艺社团',
+                date: '2024年2月20日'
+            },
+            {
+                title: '优秀干部证书',
+                number: 'CERT-2024-003',
+                name: '王五',
+                studentId: '2021003',
+                description: '在学生会工作中认真负责，组织能力强，特发此证，以资鼓励。',
+                org: '学生会',
+                date: '2024年3月10日'
+            }
+        ];
+
+        function updateCertificate(cert) {
+            document.getElementById('certTitle').textContent = cert.title;
+            document.getElementById('certNumber').textContent = `证书编号：${cert.number}`;
+            document.getElementById('certName').textContent = cert.name;
+            document.querySelector('.cert-text:nth-of-type(2)').textContent = `（学号：${cert.studentId}）`;
+            document.getElementById('certDesc').textContent = cert.description;
+            document.getElementById('certOrg').textContent = cert.org;
+            document.getElementById('certDate').textContent = cert.date;
+            document.getElementById('watermark').textContent = cert.org;
+        }
+
+        function generateImage() {
+            html2canvas(document.getElementById('certificate'), {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                canvas.toBlob(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = '证书_' + document.getElementById('certNumber').textContent.split('：')[1] + '.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            });
+        }
+
+        async function generateAll() {
+            for (let i = 0; i < certificates.length; i++) {
+                updateCertificate(certificates[i]);
+                await new Promise(resolve => setTimeout(resolve, 500));
+                generateImage();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            alert('所有证书图片已生成！');
+        }
+    </script>
+</body>
+</html>
+

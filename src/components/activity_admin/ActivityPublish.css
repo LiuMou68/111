@@ -1,0 +1,292 @@
+.activity-publish-container {
+  padding: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%);
+  min-height: calc(100vh - 60px);
+}
+
+.publish-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.publish-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  background: linear-gradient(45deg, #1976d2, #42a5f5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.back-btn {
+  padding: 10px 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.back-btn:hover {
+  background: #1976d2;
+  color: white;
+  border-color: #1976d2;
+}
+
+.publish-form-wrapper {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.success-message {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.publish-form {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.form-section {
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 25px;
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+}
+
+.form-section h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #1976d2;
+}
+
+.activity-publish-container .form-group {
+  margin-bottom: 20px;
+}
+
+.activity-publish-container .form-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 8px;
+  position: static; /* 确保不被全局样式覆盖为 absolute */
+  transform: none; /* 重置可能被覆盖的 transform */
+  pointer-events: auto; /* 恢复鼠标事件 */
+  background-color: transparent;
+  padding: 0;
+  font-size: inherit;
+}
+
+.activity-publish-container .form-group input,
+.activity-publish-container .form-group textarea,
+.activity-publish-container .form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+/* 覆盖可能存在的全局输入框 focus 时的 label 动画 */
+.activity-publish-container .form-group input:focus ~ label,
+.activity-publish-container .form-group textarea:focus ~ label,
+.activity-publish-container .form-group input:not(:placeholder-shown) ~ label,
+.activity-publish-container .form-group textarea:not(:placeholder-shown) ~ label {
+  position: static;
+  transform: none;
+  font-size: inherit;
+  color: #555;
+  background-color: transparent;
+  z-index: auto;
+}
+
+.activity-publish-container .form-group label svg {
+  color: #1976d2;
+}
+
+.activity-publish-container .required {
+  color: #f44336;
+}
+
+.activity-publish-container .form-group input:focus,
+.activity-publish-container .form-group textarea:focus,
+.activity-publish-container .form-group select:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
+.activity-publish-container .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.image-upload-group {
+  margin-top: 10px;
+}
+
+.image-upload-label {
+  display: block;
+  cursor: pointer;
+}
+
+.image-input {
+  display: none;
+}
+
+.upload-placeholder {
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  transition: all 0.3s;
+  background: #f8f9fa;
+}
+
+.upload-placeholder:hover {
+  border-color: #1976d2;
+  background: #e3f2fd;
+}
+
+.upload-placeholder svg {
+  font-size: 3rem;
+  color: #999;
+  margin-bottom: 15px;
+}
+
+.upload-placeholder span {
+  display: block;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.upload-placeholder small {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.image-preview {
+  position: relative;
+  display: inline-block;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.image-preview img {
+  max-width: 400px;
+  max-height: 300px;
+  display: block;
+}
+
+.remove-image {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(244, 67, 54, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.remove-image:hover {
+  background: rgba(244, 67, 54, 1);
+  transform: scale(1.1);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #e0e0e0;
+}
+
+.cancel-btn,
+.submit-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.cancel-btn {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.cancel-btn:hover {
+  background: #e0e0e0;
+}
+
+.submit-btn {
+  background: linear-gradient(45deg, #1976d2, #42a5f5);
+  color: white;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(25, 118, 210, 0.4);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .activity-publish-container {
+    padding: 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .publish-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+}
+

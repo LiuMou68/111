@@ -1,0 +1,221 @@
+.wallet-connect-container {
+  padding: 30px;
+  max-width: 800px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%);
+  min-height: calc(100vh - 60px);
+}
+
+.wallet-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.wallet-icon {
+  font-size: 4rem;
+  color: #1976d2;
+  margin-bottom: 20px;
+}
+
+.wallet-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  background: linear-gradient(45deg, #1976d2, #42a5f5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.wallet-content {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.info-section {
+  margin-bottom: 30px;
+  padding-bottom: 30px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.info-section h3 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.info-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.info-section li {
+  padding: 10px 0;
+  color: #666;
+  font-size: 1rem;
+}
+
+.connection-section {
+  margin-bottom: 30px;
+  padding-bottom: 30px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.error-message,
+.success-message {
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.success-message {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.connected-state,
+.disconnected-state {
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.status-badge.connected {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-badge.disconnected {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.wallet-info {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-item label {
+  font-weight: 600;
+  color: #666;
+}
+
+.address {
+  font-family: monospace;
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.connect-btn {
+  padding: 15px 40px;
+  background: linear-gradient(45deg, #1976d2, #42a5f5);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.connect-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(25, 118, 210, 0.4);
+}
+
+.connect-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.install-hint {
+  margin-top: 20px;
+  padding: 15px;
+  background: #fff3cd;
+  border-radius: 8px;
+  color: #856404;
+}
+
+.install-hint p {
+  margin: 0 0 10px 0;
+}
+
+.install-link {
+  color: #1976d2;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.install-link:hover {
+  text-decoration: underline;
+}
+
+.network-info {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.network-info h4 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.network-info p {
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.network-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.network-info li {
+  padding: 8px 0;
+  color: #666;
+  font-family: monospace;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .wallet-connect-container {
+    padding: 20px;
+  }
+
+  .wallet-content {
+    padding: 20px;
+  }
+}
+

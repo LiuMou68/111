@@ -1,0 +1,46 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app {
+  min-height: 100vh;
+  width: 100vw;
+  position: relative;
+  background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+}
+
+header {
+  padding: 2vh 4vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.logo {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0, 102, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.menu-btn {
+  background: none;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: clamp(0.8rem, 2vw, 1.2rem);
+  cursor: pointer;
+  padding: 0.5em 1em;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+
+.menu-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
