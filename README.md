@@ -126,7 +126,7 @@ npm run generate:samples # 生成示例证书数据
 ### 📋 证书验证
 - **公开验证页面**: 访问 `http://localhost:5173/verify`
 - **直接验证**: 访问 `http://localhost:5173/verify/证书编号`
-- **二维码验证**: 每个证书都有唯一二维码，扫码即可验证
+
 
 ### 📥 证书导出
 - **PDF导出**: 在证书详情页点击"下载PDF"按钮
