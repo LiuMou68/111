@@ -516,6 +516,82 @@ app.get('/api/admin/stats', async (req, res) => {
 });
 
 // 证书管理路由
+// 管理员获取所有证书列表（无过滤限制）
+app.get('/api/admin/all-certificates', async (req, res) => {
+    try {
+        const [tables] = await pool.query(
+            "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'certificate'"
+        );
+        if (tables.length === 0) {
+            return res.json([]);
+        }
+
+        // 查询所有有效证书
+        let query = `
+            SELECT c.* 
+            FROM certificate c
+            JOIN user_certificate uc ON c.Certificate_ID = uc.instance_id
+            WHERE 1=1
+            ORDER BY c.Issue_Date DESC
+        `;
+
+        const [certificates] = await pool.query(query);
+
+        // 批量获取上链信息
+        let userCertificates = [];
+        if (certificates.length > 0) {
+            const certIds = certificates.map(c => c.Certificate_ID);
+            
+            // 获取 chain_status (通过 instance_id 关联)
+            const [userCerts] = await pool.query(
+                `SELECT instance_id, chain_status FROM user_certificate WHERE instance_id IN (?)`,
+                [certIds]
+            );
+            userCertificates = userCerts;
+
+            const [blockchainInfos] = await pool.query(
+                `SELECT * FROM certificate_blockchain WHERE certificate_id IN (?)`,
+                [certIds]
+            );
+            
+            // 构建映射
+            const blockchainMap = {};
+            blockchainInfos.forEach(info => {
+                blockchainMap[info.certificate_id] = info;
+            });
+
+            // 合并信息
+            certificates.forEach(cert => {
+                const info = blockchainMap[cert.Certificate_ID];
+                // 查找对应的 user_certificate 记录 (通过 instance_id)
+                const userCert = userCertificates.find(uc => uc.instance_id === cert.Certificate_ID);
+                const chainStatus = userCert ? userCert.chain_status : 'none';
+
+                if (info) {
+                    cert.blockchain = {
+                        txHash: info.blockchain_tx_hash,
+                        ipfsHash: info.ipfs_hash,
+                        blockNumber: info.block_number,
+                        tokenId: info.token_id,
+                        isOnChain: true,
+                        chainStatus: 'minted'
+                    };
+                } else {
+                    cert.blockchain = { 
+                        isOnChain: false,
+                        chainStatus: chainStatus
+                    };
+                }
+            });
+        }
+
+        res.json(certificates);
+    } catch (error) {
+        console.error('获取所有证书列表错误:', error);
+        res.status(500).json({ error: '获取证书列表失败', details: error.message });
+    }
+});
+
 // 获取证书列表
 app.get('/api/certificates', async (req, res) => {
     try {

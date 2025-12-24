@@ -138,8 +138,8 @@ async function checkAndIssueForRule(rule) {
             
             // 添加用户证书记录
             await connection.query(
-                'INSERT INTO user_certificate (user_id, certificate_id, created_at) VALUES (?, ?, NOW())',
-                [user.User_ID, rule.id]
+                'INSERT INTO user_certificate (user_id, certificate_id, instance_id, created_at) VALUES (?, ?, ?, NOW())',
+                [user.User_ID, rule.id, newCertificateId]
             );
             
             // 上传到IPFS（如果服务可用）
@@ -363,8 +363,8 @@ async function issueCertificateForUser(user, rule) {
         
         // 添加用户证书记录
         await connection.query(
-            'INSERT INTO user_certificate (user_id, certificate_id, created_at) VALUES (?, ?, NOW())',
-            [user.User_ID, rule.id]
+            'INSERT INTO user_certificate (user_id, certificate_id, instance_id, created_at) VALUES (?, ?, ?, NOW())',
+            [user.User_ID, rule.id, newCertificateId]
         );
         
         // 上传到IPFS（如果服务可用）

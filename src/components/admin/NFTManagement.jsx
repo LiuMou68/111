@@ -23,7 +23,8 @@ const NFTManagement = () => {
             const base = import.meta.env?.VITE_API_BASE_URL || '/api';
             const api = base.endsWith('/api') ? base : `${base}/api`;
             
-            const response = await fetch(`${api}/certificates`);
+            // 使用专用的管理员接口获取所有证书
+            const response = await fetch(`${api}/admin/all-certificates`);
             if (!response.ok) throw new Error('获取证书失败');
             
             const data = await response.json();
