@@ -273,6 +273,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 20px; /* 增加内边距防止贴边 */
 }
 
 .confirm-dialog {
@@ -282,6 +283,11 @@
   max-width: 400px;
   width: 90%;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  /* 确保弹窗在屏幕中央 */
+  margin: auto;
+  position: relative;
+  max-height: 90vh; /* 防止内容过长超出屏幕 */
+  overflow-y: auto; /* 内容过长时可滚动 */
 }
 
 .confirm-dialog h3 {

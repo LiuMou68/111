@@ -214,6 +214,16 @@
   box-shadow: 0 4px 15px rgba(25, 118, 210, 0.4);
 }
 
+.join-btn.joined {
+  background: #4caf50;
+  cursor: default;
+  opacity: 0.9;
+}
+
+.join-btn.joined:hover {
+  background: #4caf50;
+}
+
 .ended-badge {
   padding: 8px 20px;
   background: #ff9800;

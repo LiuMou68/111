@@ -1,0 +1,211 @@
+.user-management-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+}
+
+.page-header h1 {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    color: #666;
+}
+
+.create-user-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    max-width: 600px;
+}
+
+.user-management-container .user-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.user-management-container .user-form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.user-management-container .user-form-group input,
+.user-management-container .user-form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.user-management-container .user-form-group input:focus,
+.user-management-container .user-form-group select:focus {
+    border-color: #1976d2;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+    outline: none;
+}
+
+.submit-btn {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: 100%;
+}
+
+.submit-btn:hover {
+    background: #1565c0;
+}
+
+.submit-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.message-banner {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.message-banner.success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.message-banner.error {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+/* 新增样式：布局 */
+.user-management-content {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .user-management-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+.create-user-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    /* 移除 max-width，由 grid 控制 */
+    max-width: none; 
+}
+
+.user-list-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.user-list-card h2, .create-user-card h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #1565c0;
+    font-size: 1.25rem;
+}
+
+/* 表格样式 */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.user-table th,
+.user-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.user-table th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+}
+
+.user-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* 角色徽章 */
+.role-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.role-badge.role-1 { /* 管理员 */
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.role-badge.role-2 { /* 学生 */
+    background-color: #f1f8e9;
+    color: #558b2f;
+}
+
+.role-badge.role-3 { /* 活动管理员 */
+    background-color: #fff3e0;
+    color: #ef6c00;
+}
+
+/* 按钮 */
+.delete-btn {
+    padding: 0.4rem 0.8rem;
+    background-color: #ffcdd2;
+    color: #c62828;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.delete-btn:hover:not(:disabled) {
+    background-color: #ef9a9a;
+}
+
+.delete-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #eee;
+    color: #999;
+}
+
+.text-center {
+    text-align: center;
+}

@@ -17,8 +17,10 @@ import AdminDashboard from "./components/admin/Dashboard";
 import CertificatePublish from "./components/admin/CertificatePublish";
 import CertificateManage from "./components/admin/CertificateManage";
 import CertificateRuleManage from "./components/admin/CertificateRuleManage";
+import CertificateRuleDetail from "./components/admin/CertificateRuleDetail"; // 新增
 import NFTManagement from "./components/admin/NFTManagement";
 import Profile from "./components/admin/Profile";
+import UserManagement from "./components/admin/UserManagement";
 
 // Student Components
 import StudentDashboard from "./components/student/Dashboard";
@@ -118,7 +120,9 @@ function App() {
             <Route path="certificate-publish" element={<CertificatePublish />} />
             <Route path="certificate-manage" element={<CertificateManage />} />
             <Route path="certificate-rule-manage" element={<CertificateRuleManage />} />
+            <Route path="certificate-rule-detail/:id" element={<CertificateRuleDetail />} /> {/* 新增路由 */}
             <Route path="nft-management" element={<NFTManagement />} />
+            <Route path="user-management" element={<UserManagement />} />
             <Route path="activities" element={<ActivityManage />} />
             <Route path="profile" element={<Profile />} />
           </Route>

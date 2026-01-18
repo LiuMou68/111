@@ -133,64 +133,64 @@
   }
 
   .auth-left-panel .auth-footer {
-    text-align: center;
-    margin-top: 2rem;
-  }
+  text-align: center;
+  margin-top: 2rem;
+}
 
-  .auth-left-panel .auth-footer p {
-    font-size: 0.85rem;
-    color: #0277bd;
-    opacity: 0.75;
-  }
+.auth-left-panel .auth-footer p {
+  font-size: 0.85rem;
+  color: #0277bd;
+  opacity: 0.75;
+}
 
-  .auth-right-panel .auth-box {
-    width: 100%;
-    max-width: 480px;
-    padding: 2.5rem;
-    overflow: hidden;
-  }
+.auth-right-panel .auth-box {
+  width: 100%;
+  max-width: 480px;
+  padding: 2.5rem;
+  overflow: hidden;
+}
 
-  .auth-right-panel .form-title {
-    font-size: 1.75rem;
-    margin-bottom: 1.5rem;
-  }
+.auth-right-panel .auth-box .form-title {
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+}
 
-  .auth-right-panel .form-group {
-    margin-bottom: 1rem;
-  }
+.auth-right-panel .auth-box .form-group {
+  margin-bottom: 1rem;
+}
 
-  .auth-right-panel .form-group label {
-    font-size: 0.95rem;
-  }
+.auth-right-panel .auth-box .form-group label {
+  font-size: 0.95rem;
+}
 
-  .auth-right-panel .form-group input,
-  .auth-right-panel .form-group select {
-    padding: 0.75rem 1rem;
-    font-size: 0.95rem;
-  }
+.auth-right-panel .auth-box .form-group input,
+.auth-right-panel .auth-box .form-group select {
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+}
 
-  .auth-right-panel .submit-button {
-    padding: 0.875rem;
-    font-size: 1rem;
-    margin-top: 0.5rem;
-  }
+.auth-right-panel .auth-box .submit-button {
+  padding: 0.875rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
 
-  .auth-right-panel .toggle-auth {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    font-size: 0.85rem;
-  }
+.auth-right-panel .auth-box .toggle-auth {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  font-size: 0.85rem;
+}
 
-  .auth-right-panel .error-message,
-  .auth-right-panel .success-message {
-    margin: 0.75rem 0;
-    padding: 0.7rem 0.9rem;
-    font-size: 0.85rem;
-  }
+.auth-right-panel .auth-box .error-message,
+.auth-right-panel .auth-box .success-message {
+  margin: 0.75rem 0;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.85rem;
+}
 
-  .auth-right-panel .auth-footer {
-    display: none;
-  }
+.auth-right-panel .auth-footer {
+  display: none;
+}
 }
 
 /* 超大屏幕优化 */
@@ -242,22 +242,22 @@
     padding: 3rem;
   }
 
-  .auth-right-panel .form-title {
+  .auth-right-panel .auth-box .form-title {
     font-size: 2rem;
     margin-bottom: 2rem;
   }
 
-  .auth-right-panel .form-group {
+  .auth-right-panel .auth-box .form-group {
     margin-bottom: 1.25rem;
   }
 
-  .auth-right-panel .form-group input,
-  .auth-right-panel .form-group select {
+  .auth-right-panel .auth-box .form-group input,
+  .auth-right-panel .auth-box .form-group select {
     padding: 0.875rem 1.125rem;
     font-size: 1rem;
   }
 
-  .auth-right-panel .submit-button {
+  .auth-right-panel .auth-box .submit-button {
     padding: 1rem;
     font-size: 1.05rem;
   }
@@ -353,7 +353,7 @@
   width: 100%;
 }
 
-.form-title {
+.auth-box .form-title {
   text-align: center;
   margin: 0 0 2rem 0;
   font-size: 1.5rem;
@@ -361,12 +361,12 @@
   color: #1565c0;
 }
 
-.form-group {
+.auth-box .form-group {
   margin-bottom: 1.25rem;
   position: relative;
 }
 
-.form-group label {
+.auth-box .form-group label {
   position: absolute;
   left: 1rem;
   top: 50%;
@@ -381,18 +381,18 @@
   z-index: 1;
 }
 
-.form-group input:focus + label,
-.form-group input:not(:placeholder-shown) + label,
-.form-group select:focus + label,
-.form-group select:not([value=""]) + label {
+.auth-box .form-group input:focus + label,
+.auth-box .form-group input:not(:placeholder-shown) + label,
+.auth-box .form-group select:focus + label,
+.auth-box .form-group select:not([value=""]) + label {
   top: 0;
   transform: translateY(-50%) scale(0.85);
   font-size: 0.85rem;
   color: #1976d2;
 }
 
-.form-group input,
-.form-group select {
+.auth-box .form-group input,
+.auth-box .form-group select {
   width: 100%;
   padding: 0.875rem 1rem;
   border: 1.5px solid rgba(33, 150, 243, 0.3);
@@ -404,29 +404,29 @@
   box-sizing: border-box;
 }
 
-.form-group input::placeholder {
+.auth-box .form-group input::placeholder {
   color: transparent;
 }
 
-.form-group input:focus::placeholder {
+.auth-box .form-group input:focus::placeholder {
   color: #999;
 }
 
-.form-group input:hover,
-.form-group select:hover {
+.auth-box .form-group input:hover,
+.auth-box .form-group select:hover {
   border-color: rgba(33, 150, 243, 0.5);
   background-color: #ffffff;
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.auth-box .form-group input:focus,
+.auth-box .form-group select:focus {
   outline: none;
   border-color: #1976d2;
   background-color: #ffffff;
   box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
 }
 
-.submit-button {
+.auth-box .submit-button {
   width: 100%;
   padding: 1rem;
   background: linear-gradient(45deg, #0066ff, #00ffff);
@@ -443,7 +443,7 @@
   overflow: hidden;
 }
 
-.submit-button::before {
+.auth-box .submit-button::before {
   content: '';
   position: absolute;
   top: 0;
@@ -454,26 +454,26 @@
   transition: left 0.5s;
 }
 
-.submit-button:hover:not(:disabled)::before {
+.auth-box .submit-button:hover:not(:disabled)::before {
   left: 100%;
 }
 
-.submit-button:hover:not(:disabled) {
+.auth-box .submit-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 102, 255, 0.6);
 }
 
-.submit-button:active:not(:disabled) {
+.auth-box .submit-button:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.submit-button:disabled {
+.auth-box .submit-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
 
-.error-message {
+.auth-box .error-message {
   color: #ff6b6b;
   margin: 1rem 0;
   padding: 0.875rem 1rem;
@@ -486,12 +486,12 @@
   gap: 0.5rem;
 }
 
-.error-message::before {
+.auth-box .error-message::before {
   content: '⚠';
   font-size: 1.1rem;
 }
 
-.success-message {
+.auth-box .success-message {
   color: #51cf66;
   margin: 1rem 0;
   padding: 0.875rem 1rem;
@@ -504,13 +504,13 @@
   gap: 0.5rem;
 }
 
-.success-message::before {
+.auth-box .success-message::before {
   content: '✓';
   font-size: 1.1rem;
   font-weight: bold;
 }
 
-.toggle-auth {
+.auth-box .toggle-auth {
   text-align: center;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
@@ -519,7 +519,7 @@
   font-size: 0.9rem;
 }
 
-.toggle-auth span {
+.auth-box .toggle-auth span {
   color: #0066ff;
   cursor: pointer;
   margin-left: 0.5rem;
@@ -527,7 +527,7 @@
   transition: all 0.2s ease;
 }
 
-.toggle-auth span:hover {
+.auth-box .toggle-auth span:hover {
   color: #00ffff;
   text-decoration: underline;
 }

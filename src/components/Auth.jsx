@@ -134,7 +134,7 @@ function Auth() {
               onChange={handleInputChange}
               required
               placeholder=" "
-              pattern="^[\u4e00-\u9fa5a-zA-Z0-9_-]{2,20}$"
+              pattern="^[\u4e00-\u9fa5a-zA-Z0-9_\-]{2,20}$"
               title="用户名支持中文、英文、数字、下划线，长度2-20位"
             />
             <label>用户名</label>

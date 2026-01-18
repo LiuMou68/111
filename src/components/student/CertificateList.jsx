@@ -64,8 +64,11 @@ const CertificateList = () => {
 
     const handleDownloadPDF = async (certId, certNumber) => {
         try {
+            const base = import.meta.env?.VITE_API_BASE_URL || '/api';
+            const api = base.endsWith('/api') ? base : `${base}/api`;
+            
             const response = await fetch(
-                `${API_BASE}/certificates/${certId}/export/pdf`
+                `${api}/certificates/${certId}/export/pdf`
             );
             
             if (!response.ok) throw new Error('导出失败');
@@ -74,11 +77,16 @@ const CertificateList = () => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `证书_${certNumber}.pdf`;
+            a.download = `证书_${certNumber}.html`; // 修正为 .html
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
+            
+            // 提示用户打印
+            setTimeout(() => {
+                alert('已下载证书网页版。请打开文件，然后使用浏览器的"打印"功能 (Ctrl+P) 并选择"另存为 PDF"即可生成高质量 PDF。');
+            }, 500);
         } catch (err) {
             alert('PDF导出失败：' + err.message);
         }

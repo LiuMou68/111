@@ -159,6 +159,10 @@ const Dashboard = () => {
             <FontAwesomeIcon icon={faCube} />
             <span>NFT 管理</span>
           </Link>
+          <Link to="/admin/user-management" className="action-button user-btn" style={{ background: '#009688' }}>
+            <FontAwesomeIcon icon={faUsers} />
+            <span>用户管理</span>
+          </Link>
           <Link to="/admin/activities" className="action-button activity-btn" style={{ background: '#ff9800' }}>
             <FontAwesomeIcon icon={faTasks} />
             <span>活动管理</span>

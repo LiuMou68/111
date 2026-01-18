@@ -81,8 +81,11 @@ const CertificateDetail = () => {
         if (!certificate) return;
         
         try {
+            const base = import.meta.env?.VITE_API_BASE_URL || '/api';
+            const api = base.endsWith('/api') ? base : `${base}/api`;
+            
             const response = await fetch(
-                `${API_BASE}/certificates/${certificate.Certificate_ID}/export/pdf`
+                `${api}/certificates/${certificate.Certificate_ID}/export/pdf`
             );
             
             if (!response.ok) throw new Error('导出失败');
@@ -91,11 +94,16 @@ const CertificateDetail = () => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `证书_${certificate.Certificate_Number}.pdf`;
+            a.download = `证书_${certificate.Certificate_Number}.html`; // 修改为 .html，因为后端返回的是 HTML
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
+            
+            // 提示用户打印
+            setTimeout(() => {
+                alert('已下载证书网页版。请打开文件，然后使用浏览器的"打印"功能 (Ctrl+P) 并选择"另存为 PDF"即可生成高质量 PDF。');
+            }, 500);
         } catch (err) {
             alert('PDF导出失败：' + err.message);
         }
@@ -104,9 +112,42 @@ const CertificateDetail = () => {
     const handleDownloadImage = async () => {
         if (!certificate) return;
         
+        // 如果证书有图片，直接下载原图
+        if (certificate.Image) {
+            try {
+                const imageUrl = certificate.Image.startsWith('Qm') || certificate.Image.startsWith('baf') 
+                    ? `https://gateway.pinata.cloud/ipfs/${certificate.Image}` 
+                    : certificate.Image.startsWith('http') 
+                    ? certificate.Image 
+                    : `${ORIGIN_BASE}${certificate.Image}`;
+                
+                // Fetch blob to avoid CORS issues if possible, or just open link
+                const response = await fetch(imageUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                // 获取文件扩展名
+                const ext = imageUrl.split('.').pop().split(/[?#]/)[0] || 'png';
+                a.download = `证书_${certificate.Certificate_Number}.${ext}`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                return;
+            } catch (e) {
+                console.warn('直接下载图片失败，尝试使用HTML导出', e);
+                // Fallback to HTML export if direct download fails
+            }
+        }
+
         try {
+            const base = import.meta.env?.VITE_API_BASE_URL || '/api';
+            const api = base.endsWith('/api') ? base : `${base}/api`;
+
             const response = await fetch(
-                `${API_BASE}/certificates/${certificate.Certificate_ID}/export/image`
+                `${api}/certificates/${certificate.Certificate_ID}/export/image`
             );
             
             if (!response.ok) throw new Error('导出失败');
@@ -115,11 +156,16 @@ const CertificateDetail = () => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `证书_${certificate.Certificate_Number}.png`;
+            a.download = `证书_${certificate.Certificate_Number}.html`; // 修改为 .html
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
+
+            // 提示用户截图
+            setTimeout(() => {
+                alert('已下载证书海报网页。请打开文件，它会自动尝试下载图片，或者您可以直接使用截图工具保存。');
+            }, 500);
         } catch (err) {
             alert('图片导出失败：' + err.message);
         }

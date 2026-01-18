@@ -31,7 +31,19 @@ const ActivityList = () => {
     const fetchActivities = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${API_BASE}/activities`);
+            const user = JSON.parse(localStorage.getItem('user'));
+            const userId = user?.user?.User_ID;
+            
+            let url = `${API_BASE}/activities`;
+            const params = new URLSearchParams();
+            if (statusFilter !== 'all') params.append('status', statusFilter);
+            if (userId) params.append('userId', userId);
+            
+            if (params.toString()) {
+                url += `?${params.toString()}`;
+            }
+
+            const response = await fetch(url);
             
             if (!response.ok) {
                 throw new Error('获取活动列表失败');
@@ -78,14 +90,23 @@ const ActivityList = () => {
         }
     };
 
-    const getStatusBadge = (status) => {
+    const getStatusBadge = (activity) => {
+        // 如果已参与，优先显示已参与
+        if (activity.is_joined) {
+            return (
+                <span className="status-badge" style={{ backgroundColor: '#4caf50' }}>
+                    已参与
+                </span>
+            );
+        }
+
         const statusMap = {
             published: { text: '可参与', color: '#1976d2' },
             ongoing: { text: '进行中', color: '#4caf50' },
             ended: { text: '已结束', color: '#ff9800' },
             cancelled: { text: '已取消', color: '#f44336' }
         };
-        const statusInfo = statusMap[status] || { text: status, color: '#999' };
+        const statusInfo = statusMap[activity.status] || { text: activity.status, color: '#999' };
         return (
             <span className="status-badge" style={{ backgroundColor: statusInfo.color }}>
                 {statusInfo.text}
@@ -152,7 +173,7 @@ const ActivityList = () => {
                         <div key={activity.id} className="activity-card">
                             <div className="card-header">
                                 <h3>{activity.title}</h3>
-                                {getStatusBadge(activity.status)}
+                                {getStatusBadge(activity)}
                             </div>
 
                             {activity.image && (
@@ -206,13 +227,20 @@ const ActivityList = () => {
 
                             <div className="card-actions">
                                 {(activity.status === 'published' || activity.status === 'ongoing') && (
-                                    <button
-                                        className="join-btn"
-                                        onClick={() => handleJoinActivity(activity.id)}
-                                    >
-                                        <FontAwesomeIcon icon={faCheckCircle} />
-                                        参与活动
-                                    </button>
+                                    activity.is_joined ? (
+                                        <button className="join-btn joined" disabled>
+                                            <FontAwesomeIcon icon={faCheckCircle} />
+                                            已参与
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="join-btn"
+                                            onClick={() => handleJoinActivity(activity.id)}
+                                        >
+                                            <FontAwesomeIcon icon={faCheckCircle} />
+                                            参与活动
+                                        </button>
+                                    )
                                 )}
                                 {activity.status === 'ended' && (
                                     <span className="ended-badge">活动已结束</span>

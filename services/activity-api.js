@@ -117,21 +117,37 @@ export function registerActivityRoutes(app, pool, upload) {
                 });
             }
 
-            const { status, category } = req.query;
-            let query = 'SELECT * FROM activity WHERE 1=1';
-            const params = [];
+            const { status, category, userId } = req.query;
+            let query = 'SELECT a.* FROM activity a';
+            let params = [];
+
+            // 如果提供了 userId，则联查 activity_participation 表以获取参与状态
+            if (userId) {
+                query = `
+                    SELECT a.*, 
+                           CASE WHEN ap.id IS NOT NULL THEN 1 ELSE 0 END as is_joined,
+                           ap.status as participation_status
+                    FROM activity a
+                    LEFT JOIN activity_participation ap ON a.id = ap.activity_id AND ap.user_id = ?
+                `;
+                params.push(userId);
+            } else {
+                // 如果没有 userId，为了保持返回结构一致（可选），可以不联查或者只查 activity
+            }
+
+            query += ' WHERE 1=1';
 
             if (status) {
-                query += ' AND status = ?';
+                query += ' AND a.status = ?';
                 params.push(status);
             }
 
             if (category) {
-                query += ' AND category = ?';
+                query += ' AND a.category = ?';
                 params.push(category);
             }
 
-            query += ' ORDER BY created_at DESC';
+            query += ' ORDER BY a.created_at DESC';
 
             const [activities] = await pool.query(query, params);
             res.json(activities);
@@ -285,6 +301,7 @@ export function registerActivityRoutes(app, pool, upload) {
 
             const pointsReward = parseInt(activity.points_reward) || 0;
             const results = [];
+            const autoIssueTriggers = []; // 收集需要触发自动发证的用户
 
             // 为每个参与者发放积分
             for (const participation of participations) {
@@ -301,14 +318,8 @@ export function registerActivityRoutes(app, pool, upload) {
                         [participation.user_id, `参加活动：${activity.title}`, pointsReward]
                     );
                     
-                    // 触发自动证书发放检查（积分变化）
-                    // 注意：这里只触发积分类型的检查，不应该触发活动类型的检查
-                    try {
-                        const { checkAndAutoIssueForUser } = await import('./auto-certificate-service.js');
-                        await checkAndAutoIssueForUser(participation.user_id, 'points');
-                    } catch (error) {
-                        console.error(`为用户 ${participation.user_id} 自动证书发放检查失败:`, error);
-                    }
+                    // 标记触发积分检查
+                    autoIssueTriggers.push({ userId: participation.user_id, type: 'points' });
 
                     // 生成IPFS哈希（积分记录）
                     const pointsData = {
@@ -365,13 +376,8 @@ export function registerActivityRoutes(app, pool, upload) {
                         [pointsReward, ipfsHash, txHash, participation.id]
                     );
                     
-                    // 触发自动证书发放检查（活动完成）
-                    try {
-                        const { checkAndAutoIssueForUser } = await import('./auto-certificate-service.js');
-                        await checkAndAutoIssueForUser(participation.user_id, 'activity', id);
-                    } catch (error) {
-                        console.error(`为用户 ${participation.user_id} 自动证书发放检查失败:`, error);
-                    }
+                    // 标记触发活动完成检查
+                    autoIssueTriggers.push({ userId: participation.user_id, type: 'activity', activityId: id });
 
                     results.push({
                         userId: participation.user_id,
@@ -393,6 +399,29 @@ export function registerActivityRoutes(app, pool, upload) {
             }
 
             await connection.commit();
+
+            // 事务提交后，触发自动证书发放检查
+            // 必须在事务提交后执行，否则自动发放服务无法查询到最新的积分和活动状态
+            if (autoIssueTriggers.length > 0) {
+                // 异步执行，不阻塞响应
+                (async () => {
+                    try {
+                        const { checkAndAutoIssueForUser } = await import('./auto-certificate-service.js');
+                        console.log(`开始处理 ${autoIssueTriggers.length} 个自动发证触发任务...`);
+                        
+                        for (const trigger of autoIssueTriggers) {
+                            try {
+                                await checkAndAutoIssueForUser(trigger.userId, trigger.type, trigger.activityId);
+                            } catch (err) {
+                                console.error(`用户 ${trigger.userId} 自动发证检查失败 (${trigger.type}):`, err);
+                            }
+                        }
+                    } catch (importErr) {
+                        console.error('导入自动发证服务失败:', importErr);
+                    }
+                })();
+            }
+
             res.json({
                 success: true,
                 message: `活动已结束，已为 ${results.filter(r => r.success).length} 名参与者发放积分`,

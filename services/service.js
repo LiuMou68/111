@@ -381,6 +381,106 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
+// 管理员获取所有用户列表
+app.get('/api/admin/users', async (req, res) => {
+    try {
+        const query = `
+            SELECT u.User_ID, u.Username, u.Email, u.Student_ID, u.Role_ID, u.Created_At, r.Role_Name 
+            FROM user u 
+            LEFT JOIN role r ON u.Role_ID = r.Role_ID
+            ORDER BY u.Created_At DESC
+        `;
+        const [users] = await pool.query(query);
+        res.json(users);
+    } catch (error) {
+        console.error('获取用户列表失败:', error);
+        res.status(500).json({ error: '获取用户列表失败', details: error.message });
+    }
+});
+
+// 管理员删除用户
+app.delete('/api/admin/users/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const headerUserId = req.headers['x-user-id']; // 前端需要传递当前操作者的ID
+
+        // 0. 权限检查（简单的基于ID检查，实际应结合Token）
+        if (headerUserId) {
+            const [adminUser] = await pool.query('SELECT Role_ID FROM user WHERE User_ID = ?', [headerUserId]);
+            if (!adminUser.length || adminUser[0].Role_ID !== 1) {
+                // 如果不是系统管理员 (Role_ID=1)
+                return res.status(403).json({ error: '权限不足，仅系统管理员可执行此操作' });
+            }
+        }
+
+        // 1. 检查目标用户是否存在
+        const [users] = await pool.query('SELECT * FROM user WHERE User_ID = ?', [id]);
+        if (users.length === 0) {
+            return res.status(404).json({ error: '用户不存在' });
+        }
+        
+        const targetUser = users[0];
+        
+        // 2. 保护机制：禁止删除超级管理员 'admin'
+        if (targetUser.Username === 'admin' && targetUser.Role_ID === 1) {
+            return res.status(403).json({ error: '无法删除超级管理员账户' });
+        }
+
+        // 3. 删除相关数据 (为了数据完整性，手动清理关联表)
+        await pool.query('DELETE FROM user_certificate WHERE user_id = ?', [id]);
+        await pool.query('DELETE FROM user_wallet WHERE user_id = ?', [id]);
+        await pool.query('DELETE FROM points_event WHERE user_id = ?', [id]);
+        await pool.query('DELETE FROM check_in WHERE user_id = ?', [id]);
+        // activity_participation 等其他表...
+        
+        // 4. 删除用户
+        await pool.query('DELETE FROM user WHERE User_ID = ?', [id]);
+
+        res.json({ success: true, message: '用户已删除' });
+    } catch (error) {
+        console.error('删除用户失败:', error);
+        res.status(500).json({ error: '删除用户失败', details: error.message });
+    }
+});
+
+// 管理员创建用户（如活动管理员）
+app.post('/api/admin/create-user', async (req, res) => {
+    try {
+        const { username, password, email, roleId } = req.body;
+
+        if (!username || !password || !email || !roleId) {
+            return res.status(400).json({ error: '所有字段都必填' });
+        }
+
+        // 检查用户名是否已存在
+        const [existingUsers] = await pool.query(
+            'SELECT * FROM user WHERE Username = ?',
+            [username]
+        );
+
+        if (existingUsers.length > 0) {
+            return res.status(400).json({ error: '用户名已存在' });
+        }
+
+        // 生成一个虚拟学号（如果是管理员/社团管理员，可能不需要真实学号，但为了兼容性还是生成一个）
+        const studentId = `ADM${new Date().getFullYear()}${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
+
+        const [result] = await pool.query(
+            'INSERT INTO user (Username, Password, Email, Student_ID, Role_ID) VALUES (?, ?, ?, ?, ?)',
+            [username, md5(password), email, studentId, roleId]
+        );
+
+        res.json({
+            success: true,
+            message: '用户创建成功',
+            userId: result.insertId
+        });
+    } catch (error) {
+        console.error('创建用户错误:', error);
+        res.status(500).json({ error: '创建用户失败', details: error.message });
+    }
+});
+
 // 注册
 app.post('/api/auth/register', async (req, res) => {
     try {
@@ -816,6 +916,29 @@ app.post('/api/certificates/:id/sync-chain', async (req, res) => {
                  const [userInfo] = await connection.query('SELECT * FROM user WHERE User_ID = ?', [ownerId]);
                  const user = userInfo.length > 0 ? userInfo[0] : { Username: cert.Student_Name, Student_ID: cert.Student_ID };
 
+                 // 尝试上传图片到 IPFS
+                 let imageIpfsUrl = '';
+                 // cert.Image (或 certificateRule.photo) 通常是 /uploads/xxx.png
+                 // 注意：certificate 表中存储的是 Image 字段
+                 const photoPath = cert.Image;
+                 if (photoPath && !photoPath.startsWith('ipfs://')) {
+                     try {
+                         const relativePath = photoPath.startsWith('/') || photoPath.startsWith('\\') ? photoPath.slice(1) : photoPath;
+                         const localFilePath = path.join(process.cwd(), relativePath);
+                         
+                         if (fs.existsSync(localFilePath)) {
+                             const imageBuffer = fs.readFileSync(localFilePath);
+                             const imageResult = await ipfsService.uploadToIPFS(imageBuffer, path.basename(localFilePath));
+                             imageIpfsUrl = `ipfs://${imageResult.ipfsHash}`;
+                             if (DEBUG) console.log('补全证书图片IPFS:', imageIpfsUrl);
+                         }
+                     } catch (imgErr) {
+                         console.error('补全证书图片IPFS失败:', imgErr);
+                     }
+                 } else if (photoPath && photoPath.startsWith('ipfs://')) {
+                     imageIpfsUrl = photoPath;
+                 }
+
                  const certificateData = {
                     certificateId: cert.Certificate_ID,
                     certificateNumber: cert.Certificate_Number,
@@ -824,6 +947,7 @@ app.post('/api/certificates/:id/sync-chain', async (req, res) => {
                     certificateType: cert.Certificate_Type,
                     organization: cert.Organization,
                     description: cert.Description,
+                    image: imageIpfsUrl,
                     issueDate: cert.Issue_Date,
                     timestamp: Date.now()
                 };
@@ -2062,6 +2186,30 @@ app.post('/api/certificates/receive', async (req, res) => {
         let blockNumber = null;
         
         try {
+            // 尝试上传图片到 IPFS
+            let imageIpfsUrl = '';
+            // certificateRule.photo 通常是 /uploads/xxx.png
+            const photoPath = certificateRule.photo;
+            if (photoPath) {
+                try {
+                    // 移除开头的 / (如果存在)
+                    const relativePath = photoPath.startsWith('/') || photoPath.startsWith('\\') ? photoPath.slice(1) : photoPath;
+                    const localFilePath = path.join(process.cwd(), relativePath);
+                    
+                    if (fs.existsSync(localFilePath)) {
+                        const imageBuffer = fs.readFileSync(localFilePath);
+                        const imageResult = await ipfsService.uploadToIPFS(imageBuffer, path.basename(localFilePath));
+                        // 构造标准的 IPFS URI
+                        imageIpfsUrl = `ipfs://${imageResult.ipfsHash}`;
+                        if (DEBUG) console.log('证书图片上传成功:', imageIpfsUrl);
+                    } else {
+                         console.warn('证书图片文件不存在:', localFilePath);
+                    }
+                } catch (imgErr) {
+                    console.error('上传证书图片到IPFS失败:', imgErr);
+                }
+            }
+
             const certificateData = {
                 certificateId: newCertificateId,
                 certificateNumber,
@@ -2070,6 +2218,7 @@ app.post('/api/certificates/receive', async (req, res) => {
                 certificateType: certificateRule.rule_name,
                 organization: '社团证书管理系统',
                 description: certificateRule.description,
+                image: imageIpfsUrl, // 添加图片链接
                 issueDate: new Date().toISOString(),
                 timestamp: Date.now()
             };
@@ -2214,6 +2363,26 @@ app.post('/api/admin/mint-batch', async (req, res) => {
                 
                 if (!cert.IPFS_Hash) {
                     try {
+                         // 尝试上传图片到 IPFS
+                         let imageIpfsUrl = '';
+                         const photoPath = cert.Image;
+                         if (photoPath && !photoPath.startsWith('ipfs://')) {
+                             try {
+                                 const relativePath = photoPath.startsWith('/') || photoPath.startsWith('\\') ? photoPath.slice(1) : photoPath;
+                                 const localFilePath = path.join(process.cwd(), relativePath);
+                                 
+                                 if (fs.existsSync(localFilePath)) {
+                                     const imageBuffer = fs.readFileSync(localFilePath);
+                                     const imageResult = await ipfsService.uploadToIPFS(imageBuffer, path.basename(localFilePath));
+                                     imageIpfsUrl = `ipfs://${imageResult.ipfsHash}`;
+                                 }
+                             } catch (imgErr) {
+                                 console.error('批量上链-补全证书图片IPFS失败:', imgErr);
+                             }
+                         } else if (photoPath && photoPath.startsWith('ipfs://')) {
+                             imageIpfsUrl = photoPath;
+                         }
+
                         const certificateData = {
                             certificateId: cert.Certificate_ID,
                             certificateNumber: cert.Certificate_Number,
@@ -2222,6 +2391,7 @@ app.post('/api/admin/mint-batch', async (req, res) => {
                             certificateType: cert.Certificate_Type,
                             organization: cert.Organization,
                             description: cert.Description,
+                            image: imageIpfsUrl,
                             issueDate: cert.Issue_Date,
                             timestamp: Date.now()
                         };
@@ -2418,8 +2588,10 @@ app.get('/api/certificates/:id/export/pdf', async (req, res) => {
 </html>
         `;
 
+        // 确保文件名使用 URL 编码，避免中文乱码导致 header 错误
+        const encodedFilename = encodeURIComponent(`证书_${cert.Certificate_Number}.html`);
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        res.setHeader('Content-Disposition', `inline; filename="证书_${cert.Certificate_Number}.html"`);
+        res.setHeader('Content-Disposition', `attachment; filename="${encodedFilename}"; filename*=UTF-8''${encodedFilename}`);
         res.send(html);
     } catch (error) {
         console.error('导出PDF错误:', error);
@@ -2586,6 +2758,32 @@ app.get('/api/certificates/:id/export/image', async (req, res) => {
     } catch (error) {
         console.error('导出图片错误:', error);
         res.status(500).json({ error: '导出图片失败', details: error.message });
+    }
+});
+
+// 获取所有已颁发的证书（管理员端）
+app.get('/api/admin/issued-certificates', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                uc.instance_id as id,
+                uc.certificate_number,
+                uc.created_at,
+                uc.chain_status,
+                u.Username as student_name,
+                u.Student_ID as student_id_number,
+                c.Certificate_Name as certificate_name,
+                c.Certificate_Type as certificate_type
+            FROM user_certificate uc
+            JOIN user u ON uc.user_id = u.User_ID
+            JOIN certificate c ON uc.certificate_id = c.Certificate_ID
+            ORDER BY uc.created_at DESC
+        `;
+        const [certificates] = await pool.query(query);
+        res.json(certificates);
+    } catch (error) {
+        console.error('获取已颁发证书失败:', error);
+        res.status(500).json({ error: '获取证书列表失败' });
     }
 });
 
